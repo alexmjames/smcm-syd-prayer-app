@@ -235,6 +235,70 @@ body {
     line-height: 1.8;
 }
 
+/* Collapsible Services */
+.service-container {
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background-color: var(--surface-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.service-header {
+    width: 100%;
+    text-align: left;
+    background-color: var(--bg-color);
+    border: none;
+    padding: 1.25rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.service-header:hover {
+    background-color: var(--border-color);
+}
+
+.service-header.expanded {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.service-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .service-title {
+    color: var(--accent-color);
+}
+
+.chevron-icon {
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+}
+
+.service-header.expanded .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.service-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.service-content.expanded {
+    max-height: 4000px; /* reasonably large to hold the prayer content */
+    padding: 1rem;
+}
+
+
 /* Bottom Nav */
 .bottom-nav {
     position: fixed;

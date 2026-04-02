@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // In a production app with a server, we'd use fetch(), but globally assigned 
     // variables avoid local CORS issues when opened directly from file://
     const PRAYER_DATA_MAP = {
-        'pesaha': typeof PESAHA_PRAYER !== 'undefined' ? PESAHA_PRAYER : null,
+        'good_friday': typeof GOOD_FRIDAY_PRAYER !== 'undefined' ? GOOD_FRIDAY_PRAYER : null,
     };
 
     // --- Initialization ---
@@ -115,20 +115,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h2 class="prayer-title">${title}</h2>
         `;
 
-        data.sections.forEach(section => {
-            const sectionTitle = currentLang === 'malayalam' ? section.title_malayalam : section.title_manglish;
-            const content = currentLang === 'malayalam' ? section.malayalam : section.manglish;
-            
-            html += `
-                <div class="prayer-section">
-                    <h3 class="prayer-section-title">${sectionTitle}</h3>
-                    <div class="prayer-stanza">${content}</div>
-                </div>
-            `;
-        });
+        if (data.services) {
+            // Nested structure: Services -> Sections
+            data.services.forEach((service, serviceIndex) => {
+                const serviceTitle = currentLang === 'malayalam' ? service.title_malayalam : service.title_manglish;
+                html += `
+                    <div class="service-container">
+                        <button class="service-header" data-target="service-${serviceIndex}">
+                            <span class="service-title">${serviceTitle}</span>
+                            <svg class="icon chevron-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                        </button>
+                        <div class="service-content" id="service-${serviceIndex}">
+                `;
+
+                service.sections.forEach(section => {
+                    const sectionTitle = currentLang === 'malayalam' ? section.title_malayalam : section.title_manglish;
+                    const content = currentLang === 'malayalam' ? section.malayalam : section.manglish;
+                    html += `
+                        <div class="prayer-section">
+                            <h3 class="prayer-section-title">${sectionTitle}</h3>
+                            <div class="prayer-stanza">${content}</div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+        } else if (data.sections) {
+            // Flat structure fallback
+            data.sections.forEach(section => {
+                const sectionTitle = currentLang === 'malayalam' ? section.title_malayalam : section.title_manglish;
+                const content = currentLang === 'malayalam' ? section.malayalam : section.manglish;
+                
+                html += `
+                    <div class="prayer-section">
+                        <h3 class="prayer-section-title">${sectionTitle}</h3>
+                        <div class="prayer-stanza">${content}</div>
+                    </div>
+                `;
+            });
+        }
 
         html += '</div>';
         viewContainer.innerHTML = html;
+
+        // Attach listeners for accordions
+        const serviceHeaders = viewContainer.querySelectorAll('.service-header');
+        serviceHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const targetId = header.getAttribute('data-target');
+                const content = document.getElementById(targetId);
+                header.classList.toggle('expanded');
+                content.classList.toggle('expanded');
+            });
+        });
     }
 
     function initTheme() {
